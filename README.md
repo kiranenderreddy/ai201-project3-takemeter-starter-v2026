@@ -39,140 +39,188 @@
 
 ## What This Does
 
-<!-- Your community, and what your classifier sorts posts into. Three or four
-     sentences. -->
+TakeMeter is a text classifier built using posts from the public r/nba community.
 
+It classifies NBA posts into three categories: `report`, `analysis`, and `take`.
 
+The goal is to distinguish straightforward factual reporting from evidence-backed basketball reasoning and from opinions, predictions, jokes, or emotional reactions.
 
 ---
 
 ## Label Taxonomy
 
-<!-- Each label: a one-sentence definition and two real examples from your
-     reading. Then your decision rule for the hardest boundary.
+### `report`
 
-     The decision rule is worth a point on its own and it's the thing most
-     people leave out. Every taxonomy has a hardest boundary. Name yours. -->
-
-### `label_one`
-
-**Definition:**
+**Definition:** A post that mainly reports an NBA event, transaction, injury, quote, result, or highlight without developing the poster's own argument.
 
 **Example 1:**
->
+
+> "[Charania] Phoenix Suns center Oso Ighodaro has agreed to a three-year, $29 million contract extension through the 2030-31 season..."
 
 **Example 2:**
->
 
-### `label_two`
+> "[Charania] Just in: Sacramento Kings guard Ben Simmons is believed to have sustained a torn Achilles tendon at practice Sunday..."
 
-**Definition:**
+### `analysis`
+
+**Definition:** A post that makes a basketball claim or judgment and supports it with specific facts, statistics, comparisons, game information, or developed reasoning.
 
 **Example 1:**
->
+
+> "[Quinn] Bronny hasn't reached the point of offensive viability in 2 years and the defensive threshold is so damn high at his size..."
 
 **Example 2:**
->
+
+> "[OC] People debate over the bar for making the Hall of Fame for players, but nobody does for coaches. I've analyzed all 22 coaches in the HoF..."
+
+### `take`
+
+**Definition:** A post that mainly expresses a judgment, prediction, joke, emotional response, or strong basketball opinion without a developed evidence-backed argument.
+
+**Example 1:**
+
+> "With Ben Simmons now out with a torn Achilles injury... Horrible to see, especially as the season hasn't even started. Seems like another season with possibly even more players having the same injury."
+
+**Example 2:**
+
+> "Cavs struggle to make a half court shot and Kenny Atkinson has to take matters in his own hands."
 
 ### The hardest boundary
 
-**Which two labels:**
+**Which two labels:** `analysis` and `take`
 
 **The decision rule I used every time:**
-<!-- e.g. "If the post names a specific checkable fact, it's `analysis`, even
-     if the tone is heated." -->
 
+If the conclusion is supported by a specific statistic, comparison, game event, or concrete basketball reason, I label the post `analysis`.
 
+If the post is mainly a judgment, prediction, joke, or emotional reaction without developed reasoning, I label it `take`.
+
+For the `report` versus `analysis` boundary, if the post mainly repeats or summarizes news, a quote, transaction, injury, result, or highlight without adding its own argument, I label it `report`, even when the reported information contains statistics.
 
 ---
 
 ## The Dataset
 
-<!-- Where you collected from, how you labelled, your counts, and three hard
-     cases. -->
-
 **Where the posts came from:**
 
-**How I labelled them:** <!-- Cold first? Pre-labelled with AI and corrected?
-Say so plainly — the disclosure is required, not penalised. -->
+The posts came from the public r/nba Reddit community. I collected complete post text rather than trimming posts to shorter excerpts.
+
+**How I labelled them:**
+
+I first labeled 20 posts manually without AI assistance and marked those rows `cold`.
+
+For the remaining posts, I used AI to suggest labels using my `report`, `analysis`, and `take` definitions. I then read and reviewed the AI-assisted rows and corrected labels when necessary before finalizing them.
+
+I finished with 180 labeled examples. I originally planned for 200, but I used the project's timebox/stop rule and documented the smaller dataset rather than rushing the remaining examples.
 
 **Counts per label:**
 
 | Label | Count | Share |
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-| **Total** |  | 100% |
+|---|---:|---:|
+| `report` | 111 | 61.7% |
+| `analysis` | 35 | 19.4% |
+| `take` | 34 | 18.9% |
+| **Total** | **180** | **100%** |
+
+No label exceeds the project's 70% maximum.
 
 **Three hard cases**
 
-<!-- Any post that made you pause: what it was, which two labels it could have
-     been, and what you chose. These are worth more than the easy 190. -->
-
 **1.**
-> *The post:*
->
-> *Could have been:*
->
-> *I chose, because:*
+
+> **The post:**  
+> "With Ben Simmons now out with a torn Achilles injury... Horrible to see, especially as the season hasn't even started. Seems like another season with possibly even more players having the same injury."
+
+> **Could have been:** `report` or `take`
+
+> **I chose, because:** `take`. The injury itself is factual, but the post goes beyond simply reporting it by expressing an emotional reaction and speculating that the season could have even more similar injuries.
 
 **2.**
-> *The post:*
->
-> *Could have been:*
->
-> *I chose, because:*
+
+> **The post:**  
+> "[Quinn] Bronny hasn't reached the point of offensive viability in 2 years and the defensive threshold is so damn high at his size. If he's never gonna make shots, he has to be a Jamal Shead-level pest to justify a roster spot and he isn't."
+
+> **Could have been:** `analysis` or `take`
+
+> **I chose, because:** `analysis`. It contains a strong judgment, but the conclusion is supported with specific basketball reasoning about offense, size, defense, shooting, and a player comparison.
 
 **3.**
-> *The post:*
->
-> *Could have been:*
->
-> *I chose, because:*
+
+> **The post:**  
+> "[Highlights] Isaiah Evans full highlights... 21 Points on 6/13 FG, 5/10 from 3, 4/4 from the line, 2 Rebounds, 3 Assists..."
+
+> **Could have been:** `report` or `analysis`
+
+> **I chose, because:** `report`. The post contains detailed statistics, but the statistics are mainly being presented as factual information. It does not use those numbers to develop an argument or explain why the performance happened.
 
 ---
 
 ## The Training Run
 
-<!-- Your starting model, your settings, and anything you changed and why. -->
-
 **Base model:**
 
-**Settings:** <!-- epochs, learning rate, batch size, seed -->
+`distilbert-base-uncased`
+
+**Settings:**
+
+- Epochs: 3
+- Learning rate: `2e-5`
+- Batch size: 16
+- Maximum sequence length: 128
+- Seed: 42
+- Device: CPU
+- PyTorch version: `2.14.1+cpu`
 
 **Anything I changed from the defaults, and why:**
 
-**Split sizes:** <!-- train / val / test, and per-label counts in the test
-split. If a label had fewer than about 8 in test, say so — it explains a lot
-of next unit's variance. -->
+I did not change the training hyperparameters. I used the starter notebook's default values so that the first training run would provide a consistent baseline for later evaluation.
 
+**Split sizes:**
 
+The notebook used a stratified 70/15/15 train, validation, and test split.
+
+| Label | Train | Validation | Test |
+|---|---:|---:|---:|
+| `report` | 77 | 17 | 17 |
+| `analysis` | 25 | 5 | 5 |
+| `take` | 24 | 5 | 5 |
+| **Total** | **126** | **27** | **27** |
+
+`analysis` and `take` each have only five examples in the held-out test set. Because those test subsets are small, their individual F1 scores may vary significantly when the split seed changes.
+
+The first training run completed successfully and produced `results.json` and `test_split.csv`.
+
+Initial held-out results for seed 42 were:
+
+- Overall accuracy: `0.630`
+- Macro F1: `0.258`
+- `report` F1: `0.773`
+- `analysis` F1: `0.000`
+- `take` F1: `0.000`
+
+The model performed much better on the larger `report` class than on `analysis` and `take`. I will diagnose this further in Unit 6 rather than changing the original criteria after seeing the result.
 
 ---
 
 ## How I Used AI
 
-<!-- Two specific moments — what you asked, what came back, what you changed.
-
-     ⚠️ Plus disclosure of any pre-labelling. If you had a model pre-label a
-     batch and then read and corrected every one, say that. It's an allowed
-     workflow and disclosing it costs you nothing. Not disclosing it is the
-     problem. -->
-
 **Moment 1**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- **What I asked for:** I asked AI to stress-test the boundaries of my three-label taxonomy using difficult NBA post examples.
+- **What came back:** It tested cases such as factual transaction posts, unsupported opinions, statistics-only posts, jokes, predictions, and posts containing evidence-backed reasoning.
+- **What I changed:** I clarified my decision rules. In particular, statistics alone do not automatically make a post `analysis`; they need to be used to support a developed conclusion. I also clarified that a post primarily repeating news or a quote remains `report`.
 
 **Moment 2**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- **What I asked for:** After completing my initial cold-labeling step, I asked AI to suggest labels for additional r/nba posts using my definitions of `report`, `analysis`, and `take`.
+- **What came back:** AI supplied suggested labels for the later examples.
+- **What I changed:** I reviewed the AI-assisted examples myself and corrected labels where the suggestion did not match my written decision rules.
 
 **Pre-labelling disclosure:**
+
+I labeled my first 20 examples manually without AI help and marked them `cold`. After that, I used AI to pre-label later examples. I reviewed the AI-assisted rows before finalizing the dataset.
+
+I also used AI for development troubleshooting, including identifying that VS Code was using the wrong Jupyter kernel and helping me connect the notebook to the `.venv` inside the Project 3 repository.
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
 
