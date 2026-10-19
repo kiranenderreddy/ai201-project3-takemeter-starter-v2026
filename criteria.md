@@ -53,63 +53,50 @@ whether you hit them:
 
 ## 1.
 
-<!-- Your criterion. It must name a number. -->
-
-
+The classifier should achieve at least **65% overall accuracy** on the held-out test set across all three seeds.
 
 **Why this target:**
 
-
+My taxonomy has three labels: `report`, `analysis`, and `take`, so random guessing would be around 33%. I chose 65% because it is substantially above chance while still being realistic for a small dataset of about 200 labeled r/nba posts.
 
 ---
 
 ## 2.
 
-<!-- Your criterion. -->
-
-
+Each of the three labels should achieve an **F1 score of at least 0.60** on the held-out test set across all three seeds.
 
 **Why this target:**
 
-
+I want the classifier to learn all three categories rather than getting high overall accuracy by performing well on only one or two labels. Since the dataset contains only about 200 examples, the test set for each label will be relatively small, so I chose 0.60 instead of a very high per-label target.
 
 ---
 
 ## 3.
 
-<!-- Your criterion. -->
-
-
+No single label should make up more than **60% of the 200-post labeled dataset**.
 
 **Why this target:**
 
-
+The classifier needs enough examples of `report`, `analysis`, and `take` to learn the differences between them. Allowing one label to dominate the dataset could cause the model to favor that label instead of learning the taxonomy.
 
 ---
 
 ## 4.
 
-<!-- Your criterion. -->
-
-
+A second person using my written label definitions and decision rules should agree with my labels on at least **80% of a sample of 20 posts**.
 
 **Why this target:**
 
-
-
+The boundary between `analysis` and `take` can sometimes be subjective, especially when a post contains both an opinion and some supporting information. I chose 80% because the definitions and decision rules should make most posts consistently labelable even if some borderline cases remain.
 ---
 
 ## 5.
 
-<!-- Your criterion. -->
-
-
+Across all three seeds, predictions with model confidence of at least **0.80** should be correct at least **75% of the time**.
 
 **Why this target:**
 
-
-
----
+A high-confidence prediction should be more dependable than an uncertain one. Because `report`, `analysis`, and `take` can overlap in borderline posts, I chose 75% as a useful reliability target for predictions where the model reports high confidence.
 
 <!-- ─────────────────────────────────────────────────────────────────────────
      UNIT 6 — read this before you change anything above.
