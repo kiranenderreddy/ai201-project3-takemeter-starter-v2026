@@ -244,6 +244,7 @@ I also used AI for development troubleshooting, including identifying that VS Co
 **What I predicted before I looked:**
 <!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
      prediction made afterwards isn't one. -->
+     I expect the trained model to outperform the zero-shot baseline overall because it was fine-tuned on r/nba examples using my specific label boundaries. I expect `report` to be the strongest label, while `analysis` and `take` may remain more difficult because their boundary is more subjective and they have fewer examples.
 
 **What the gap actually means:**
 <!-- If the baseline matched your trained model, your fine-tuning added
