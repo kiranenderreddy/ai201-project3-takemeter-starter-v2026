@@ -274,16 +274,21 @@ I also used AI for development troubleshooting, including identifying that VS Co
 <!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
      An image of a matrix earns nothing. -->
 
-| true \ predicted |  |  |  |
+
+| true \ predicted | report | analysis | take |
 |---|---|---|---|
-| **** |  |  |  |
-| **** |  |  |  |
-| **** |  |  |  |
+| **report** | 17 | 0 | 0 |
+| **analysis** | 5 | 0 | 0 |
+| **take** | 5 | 0 | 0 |
 
 **My biggest off-diagonal number, and what it means:**
 <!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
      direction. "7 real analysis posts were called hot_take and only 3 went the
      other way" is a direction, not just an error rate. -->
+
+The biggest confusion was 5 real `analysis` posts being predicted as `report`. There was also an equally large error where 5 real `take` posts were predicted as `report`. The model predicted every test example as `report`, so it learned the majority class but did not learn the boundaries separating `analysis` and `take` from `report`.
+
+This confusion is strongly one-directional: no real `report` posts were predicted as `analysis` or `take`. The agreement report will help determine whether this came from inconsistent labeling or from the model failing to learn the minority classes.
 
 
 
