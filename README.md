@@ -236,10 +236,11 @@ I also used AI for development troubleshooting, including identifying that VS Co
 
 | Measure | Baseline | Trained | Difference |
 |---|---|---|---|
-| Overall accuracy |  |  |  |
-| Macro F1 |  |  |  |
-| F1 — `label_one` |  |  |  |
-| F1 — `label_two` |  |  |  |
+| Overall accuracy | 0.185 | 0.630 | +0.444 |
+| Macro F1 | 0.111 | 0.258 | +0.146 |
+| F1 — `analysis` | 0.333 | 0.000 | -0.333 |
+| F1 — `report` | 0.000 | 0.773 | +0.773 |
+| F1 — `take` | 0.000 | 0.000 | +0.000 |
 
 **What I predicted before I looked:**
 <!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
@@ -249,6 +250,7 @@ I also used AI for development troubleshooting, including identifying that VS Co
 **What the gap actually means:**
 <!-- If the baseline matched your trained model, your fine-tuning added
      nothing — and that is a real finding, not a failure. Say it plainly. -->
+     The trained model clearly outperformed the zero-shot baseline overall, improving accuracy from 0.185 to 0.630 and macro F1 from 0.111 to 0.258. The largest improvement was on `report`, where F1 increased from 0.000 to 0.773. However, the baseline performed better on `analysis`, while neither model successfully identified `take` on this test split. This suggests that fine-tuning helped the model learn the dominant `report` class, but it did not yet learn the harder `analysis` and `take` boundaries well.
 
 
 
