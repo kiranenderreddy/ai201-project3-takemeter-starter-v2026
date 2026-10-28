@@ -258,22 +258,19 @@ I also used AI for development troubleshooting, including identifying that VS Co
 
 ## Run Log — Before
 
-<!-- Five criteria across three seeds. The notebook's section 6 prints the
-     spread table; the Target and Verdict columns are yours. -->
-
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.65 | 0.630 | 0.630 | 0.630 | MISSED |
+| 2. Every label F1 | ≥ 0.60 | min F1 = 0.000 | min F1 = 0.000 | min F1 = 0.000 | MISSED |
+| 3. Largest label share | ≤ 60% | report = 61.7% | report = 61.7% | report = 61.7% | MISSED |
+| 4. Agreement consistency | ≥ 80% | 100% | 100% | 100% | MET* |
+| 5. Confidence accuracy | ≥ 75% | 1.000 | 1.000 | 1.000 | MET* |
+
+\* Criteria 4 and 5 required measurement clarification. The original agreement criterion referred to another person labeling a sample under my own taxonomy, which I did not collect. The available agreement instrument instead measured my labels against staff on 30 posts under the staff taxonomy, where agreement was 30/30 = 100%.
+
+The original confidence criterion referred specifically to predictions with confidence ≥ 0.80. The notebook does not save that exact threshold metric. Its available confidence measure is accuracy on the most-confident third of predictions, which was 1.000 for all three seeds. I preserved the original criteria and document these measurement limitations rather than changing the targets after seeing the results.
 
 ### Confusion matrix
-
-<!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
-     An image of a matrix earns nothing. -->
-
 
 | true \ predicted | report | analysis | take |
 |---|---|---|---|
@@ -281,43 +278,52 @@ I also used AI for development troubleshooting, including identifying that VS Co
 | **analysis** | 5 | 0 | 0 |
 | **take** | 5 | 0 | 0 |
 
+
 **My biggest off-diagonal number, and what it means:**
 <!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
      direction. "7 real analysis posts were called hot_take and only 3 went the
      other way" is a direction, not just an error rate. -->
 
-The biggest confusion was 5 real `analysis` posts being predicted as `report`. There was also an equally large error where 5 real `take` posts were predicted as `report`. The model predicted every test example as `report`, so it learned the majority class but did not learn the boundaries separating `analysis` and `take` from `report`.
-
-This confusion is strongly one-directional: no real `report` posts were predicted as `analysis` or `take`. The agreement report will help determine whether this came from inconsistent labeling or from the model failing to learn the minority classes.
-
+There were two equally large confusions. Five real `analysis` posts were predicted as `report`, and five real `take` posts were predicted as `report`. The model predicted every held-out example as `report`, so it learned the majority class but did not learn the boundaries separating the minority classes from `report`.
 
 
 ---
 
 ## Verdicts and Diagnoses
 
-<!-- MET or MISSED against LAST UNIT's target. The target has to hold across
-     all three seeds, not turn up sometimes. -->
-
 | # | Criterion | Target | Verdict | How I decided |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| 1 | Overall accuracy | ≥ 0.65 across all three seeds | MISSED | Accuracy was 0.630 for seeds 42, 7, and 2024. |
+| 2 | Every label F1 | ≥ 0.60 across all three seeds | MISSED | `analysis` and `take` both had F1 = 0.000 in every seed. |
+| 3 | Largest label share | ≤ 60% | MISSED | `report` is 111/180 examples, or 61.7%. |
+| 4 | Agreement consistency | ≥ 80% | MET* | Staff agreement was 30/30 = 100%, although this used the staff taxonomy rather than my own taxonomy. |
+| 5 | Confidence accuracy | ≥ 75% | MET* | Accuracy on the notebook's most-confident third was 1.000 in all three seeds; the original ≥0.80 confidence threshold was not directly recorded. |
 
-**Diagnoses**
+### Diagnoses
 
-<!-- For each miss: the cause, and how you know. The four common causes are:
-     too few examples for a label, a boundary you applied inconsistently, a
-     genuinely hard label pair, and a task the model can't reach from this
-     much data.
+**Criterion 1 — MISSED**
 
-     ⚠️ Use your agreement report as evidence. It is the only instrument you
-     have that can tell a LABELLING problem from a MODEL problem, and this
-     section is graded on whether you used it that way. -->
+The model reached 0.630 accuracy in all three seeds, just below my 0.65 target. The identical result across all three seeds means this was not caused by one unlucky random split. The confusion matrix shows the main cause: the model predicted every test example as `report`. Because `report` makes up 61.7% of my dataset, predicting the majority class alone produces an accuracy close to the observed result.
 
+**Criterion 2 — MISSED**
+
+This criterion missed substantially. `report` achieved an F1 of 0.773, while both `analysis` and `take` had F1 = 0.000 in all three seeds. Each test split contained only five `analysis` examples and five `take` examples, compared with 17 `report` examples. The matrix confirms that every `analysis` and `take` example was classified as `report`. This points primarily to insufficient representation of the minority classes and class imbalance rather than seed instability.
+
+**Criterion 3 — MISSED**
+
+My target allowed no label above 60%, but `report` represents 111 of 180 examples, or 61.7%. The miss is only 1.7 percentage points, but the criterion was written before training, so it remains a miss. This imbalance is also consistent with the model's tendency to predict `report` for every example.
+
+**Criterion 4 — Measurement limitation / MET on available agreement test**
+
+My original criterion expected at least 80% agreement when another person applied my own taxonomy. That exact test was not performed. The course agreement test instead required me to apply the staff taxonomy to 30 posts and compare my decisions with staff. I achieved 30/30 = 100% agreement.
+
+Because the staff taxonomy is different from my r/nba taxonomy, this does not prove that my original 180 labels are perfectly consistent. However, it provides evidence that I can apply explicit written decision rules consistently, so the model failure cannot automatically be attributed to a general labeling-consistency problem.
+
+**Criterion 5 — Measurement limitation / MET on available confidence measure**
+
+My original criterion required predictions with confidence ≥ 0.80 to be correct at least 75% of the time across all three seeds. The notebook did not save an explicit accuracy calculation at the 0.80 threshold. It instead measured accuracy for the most-confident third of predictions.
+
+That measure was 1.000 for seeds 42, 7, and 2024. Therefore the available confidence-ranking measure met the 75% target, but I am documenting that it is not exactly the same measurement as the original ≥0.80 threshold.
 
 
 ---
