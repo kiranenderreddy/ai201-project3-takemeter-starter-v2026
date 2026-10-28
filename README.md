@@ -373,25 +373,56 @@ Because I had 100% agreement on the staff set, this check did not show evidence 
 ---
 
 ## The Improvement
+### What I changed
 
-**What I changed:**
+My diagnosis showed that the model was collapsing toward the majority `report` class. Before the improvement, the dataset contained:
 
-**Which diagnosis pointed at it:**
+- `report`: 111
+- `analysis`: 35
+- `take`: 34
+
+I made one targeted change: I added 30 new `take` examples using the same taxonomy and labeling rules. I did not change the model, learning rate, epochs, batch size, or label definitions.
+
+After the improvement, the dataset contained:
+
+- `report`: 111
+- `analysis`: 35
+- `take`: 64
+- Total: 210
+
+This reduced the `report` share from 61.7% to 52.9%.
 
 ### Run Log — After
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.65 | 0.563 | 0.531 | 0.625 | MISSED |
+| 2. Every label F1 | ≥ 0.60 | min F1 = 0.000 | min F1 = 0.000 | min F1 = 0.000 | MISSED |
+| 3. Largest label share | ≤ 60% | report = 52.9% | report = 52.9% | report = 52.9% | MET |
+| 4. Agreement consistency | ≥ 80% | 100% staff agreement | 100% staff agreement | 100% staff agreement | MET* |
+| 5. Confidence accuracy | ≥ 75% | 1.000 | 0.900 | 1.000 | MET* |
 
-**Did it help, and how do I know:**
+\* The agreement check used the course staff taxonomy rather than my original r/nba taxonomy. The confidence values shown are accuracy on the most-confident third because the notebook did not save the exact original confidence ≥ 0.80 threshold metric.
 
-<!-- If it didn't, say so. Relabelling that didn't help is a genuinely
-     interesting result and earns full credit. -->
+### After-run per-label results
+
+| Measure | Seed 42 | Seed 7 | Seed 2024 |
+|---|---:|---:|---:|
+| Overall accuracy | 0.563 | 0.531 | 0.625 |
+| Macro F1 | 0.297 | 0.231 | 0.400 |
+| F1 — `report` | 0.708 | 0.694 | 0.739 |
+| F1 — `analysis` | 0.000 | 0.000 | 0.000 |
+| F1 — `take` | 0.182 | 0.000 | 0.462 |
+
+### Did the improvement help?
+
+The improvement helped in one important way but did not improve the model overall.
+
+Before the change, `take` had an F1 of 0.000 in all three seeds and every `take` post was predicted as `report`. After adding 30 `take` examples, the model correctly predicted one `take` example in seed 42 and three in seed 2024. The `take` F1 increased to 0.182 and 0.462 in those runs.
+
+However, seed 7 still predicted every example as `report`, and `analysis` remained at F1 = 0.000 for all three seeds. Average overall accuracy decreased from about 0.630 before the change to about 0.573 afterward, while average macro F1 increased from about 0.258 to about 0.309.
+
+Therefore, adding `take` examples improved minority-class learning somewhat, but it was not enough to produce a reliable three-class classifier.
 
 
 
@@ -400,12 +431,23 @@ Because I had 100% agreement on the staff set, this check did not show evidence 
 ## What's Still Broken
 
 <!-- For each criterion still missed: what you'd do, and why you stopped. -->
+The biggest remaining problem is the `analysis` label. It had F1 = 0.000 before the improvement and remained at 0.000 for all three seeds afterward. The model still classified every true `analysis` example as `report`.
 
+The `take` label improved, but the result was unstable across seeds. Its F1 ranged from 0.000 to 0.462 after the improvement, which means the model still has not learned that boundary reliably.
+
+If I continued the project, I would next add more carefully selected `analysis` examples because it is now the thinnest class with only 35 examples. I would also inspect `analysis` versus `report` examples closely to determine whether those posts contain enough consistent textual signals for DistilBERT to learn the distinction.
+
+My intended taxonomy separates reporting, evidence-backed basketball reasoning, and unsupported opinions or reactions. The confusion matrices show that the model learned `report` very strongly, began to learn `take` after additional examples, but still failed to learn `analysis`.
+
+I stopped after one improvement because the assignment requires one controlled change so that its effect can be measured independently.
 
 
 **The gap between what I meant my labels to capture and what the model
 learned:**
 <!-- Two sentences. Your confusion matrix is the evidence. -->
+**The gap between what I meant my labels to capture and what the model learned:**
+
+I intended `report`, `analysis`, and `take` to represent three distinct kinds of r/nba posts: straightforward reporting, evidence-backed basketball reasoning, and unsupported opinions or reactions. In practice, the model learned `report` very strongly, began to recognize some `take` posts after I added more examples, but still failed to learn `analysis`, which remained at F1 = 0.000 across all three after-run seeds.
 
 
 
