@@ -330,27 +330,16 @@ This confusion is strongly one-directional: no real `report` posts were predicte
      data/staff_taxonomy.md, not your own — so every argument below is made
      from those definitions and those decision rules. -->
 
-**Agreement rate:** ___ / 30 = ___%
+**Agreement rate:** **30 / 30 = 100%**
 
-<!-- Nobody grades this number. A 60% who argues every disagreement from the
-     stated rules beats a 95% who wrote "staff was right" nine times. Several
-     of the 30 were chosen because they're genuinely ambiguous — you should be
-     winning some of these. -->
+I matched the staff label on all 30 posts.
 
-**Disagreements**
+I found the set relatively straightforward once I consistently applied the written decision rules. The most useful rule was that a specific fact only makes a post `analysis` when that fact actually carries the argument. Posts making unsupported general claims were `hot_take`, while posts mainly describing something that had just happened to the writer and how it felt were `reaction`.
 
-<!-- Three lines each: the post, both labels, and who you think is right and
-     why — grounded in the staff definitions you were both applying.
+**Disagreements:**
 
-     Then sort each into one of three piles:
-       (a) the rule covered it and I applied it loosely → a consistency problem
-       (b) the rule genuinely doesn't say               → a gap in the definitions
-       (c) the rule is ambiguous here and my reading is defensible → argue it.
-           This is a legitimate win.
+There were no disagreements with the staff labels, so there were no cases to adjudicate or place into piles (a), (b), or (c).
 
-     Pile (a) is the one that matters most for your diagnosis: if you applied a
-     written rule two different ways on 30 posts, that is direct evidence about
-     what you did across your own 200. -->
 
 **1.**
 > *The post:*
@@ -371,6 +360,7 @@ This confusion is strongly one-directional: no real `report` posts were predicte
 > *Which pile:*
 
 **What the pattern in my disagreements tells me:**
+Because I had 100% agreement on the staff set, this check did not show evidence that I was inconsistently applying written decision rules. That does not prove that every label in my own r/nba dataset is perfect, since the staff set uses a different taxonomy, but it suggests that I can apply a clearly written taxonomy consistently. Therefore, the trained model's collapse toward `report` is more likely related to the imbalance and small number of `analysis` and `take` examples than to a general inability to follow labeling rules consistently.
 
 
 
